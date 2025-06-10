@@ -1,0 +1,6 @@
+monmen\monoxido\commands\OpenMenuCommand.class
+monmen\monoxido\utils\SkinCache.class
+monmen\monoxido\MonoxiMenus.class
+monmen\monoxido\utils\PlaceholderUtil.class
+monmen\monoxido\listeners\MenuClickListener.class
+monmen\monoxido\menus\PlayerMenu.class
