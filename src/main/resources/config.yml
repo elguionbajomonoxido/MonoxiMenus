@@ -1,7 +1,9 @@
 
-placeholders:
-  - "&7Tiempo online: %playtime%"
-  - "&7Kills: %kills%"
+player_head:
+  lore:
+    - "&7Tiempo online: %playtime%"
+    - "&7Kills: %kills%"
+    - "&7Coords: %player_x% %player_y% %player_z%"
 
 textures:
   previous_page: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODY0Zjc3OWE4ZTNmZmEyMzExNDNmYTY5Yjk2YjE0ZWUzNWMxNmQ2NjllMTljNzVmZDFhN2RhNGJmMzA2YyJ9fX0="
@@ -10,9 +12,53 @@ textures:
 messages:
   no_players: "§cNo hay jugadores disponibles."
   selected_player: "§aSeleccionaste a %player%."
+  player_offline: "§cEl jugador %player% no está en línea."
   refreshing: "§eRefrescando el menú..."
+  console_only: "§cEste comando solo puede ser usado por la consola."
+  player_only: "§cEste comando solo puede ser usado por jugadores."
+  usage_error: "§cUso incorrecto. Usa: /pmenu [página] [ordenAlfabético]"
+  cache_cleared: "§aLa caché de skins ha sido borrada correctamente."
+  config_reloaded: "§aLa configuración ha sido recargada correctamente."
+  no_permission: "§cNo tienes permiso para usar este comando."
+
+menu:
+  title: "Jugadores - %filter% - Página %page%"
+  filter_az: "A-Z"
+  filter_time: "Tiempo"
+  buttons:
+    refresh: "§eRefrescar"
+    close: "§cCerrar"
+    filter: "§aFiltros: %filter%"
 
 cache:
   enabled: true
   storage: "yml"
   expiration_time: 3600  # En segundos
+
+actions_menu:
+  title: "Acciones para %player%"
+  buttons:
+    kill: "§cMatar a %player%"
+    teleport: "§aTeletransportarse a %player%"
+    kick: "§eExpulsar a %player%"
+    # Espacio para futuras acciones
+    # ban: "§4Banear a %player%"
+    # mute: "§6Silenciar a %player%"
+  descriptions:
+    kill: "§7Mata instantáneamente al jugador"
+    teleport: "§7Te teletransporta a la ubicación del jugador"
+    kick: "§7Expulsa al jugador del servidor"
+    # Espacio para futuras descripciones
+    # ban: "§7Prohíbe al jugador entrar al servidor"
+    # mute: "§7Impide que el jugador escriba en el chat"
+  messages:
+    kill_success: "§aHas matado a %player%."
+    teleport_success: "§aTe has teletransportado a %player%."
+    kick_success: "§aHas expulsado a %player%."
+    # Espacio para futuros mensajes
+    # ban_success: "§aHas baneado a %player%."
+    # mute_success: "§aHas silenciado a %player%."
+  kick_reason: "Has sido expulsado por un administrador"
+  # Espacio para futuras configuraciones
+  # ban_reason: "Has sido baneado por un administrador"
+  # mute_duration: 300 # En segundos

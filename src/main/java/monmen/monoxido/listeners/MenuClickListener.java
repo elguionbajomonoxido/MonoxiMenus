@@ -1,8 +1,10 @@
 package monmen.monoxido.listeners;
 
 import monmen.monoxido.menus.PlayerMenu;
+import monmen.monoxido.menus.PlayerActionsMenu;
 import monmen.monoxido.utils.SkinCache;
 import org.bukkit.Material;
+import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -25,6 +27,10 @@ public class MenuClickListener implements Listener {
     public void onInventoryClick(InventoryClickEvent event) {
         if (event.getClickedInventory() == null || event.getCurrentItem() == null) return;
 
+        // Verificar si el inventario es parte de nuestro plugin
+        String title = event.getView().getTitle();
+        if (!title.contains("Jugadores")) return;
+
         Inventory inventory = event.getClickedInventory();
         ItemStack clickedItem = event.getCurrentItem();
         Player player = (Player) event.getWhoClicked();
@@ -34,25 +40,53 @@ public class MenuClickListener implements Listener {
 
         if (clickedItem.hasItemMeta() && clickedItem.getItemMeta().hasDisplayName()) {
             String displayName = clickedItem.getItemMeta().getDisplayName();
+            boolean isAZ = title.contains(config.getString("menu.filter_az", "A-Z"));
 
-            if (displayName.contains("Página Anterior")) {
-                int currentPage = getCurrentPage(player.getOpenInventory().getTitle());
+            // Botón de página anterior
+            if (displayName.contains("Página Anterior") || 
+                (clickedItem.getType() == Material.PLAYER_HEAD && event.getSlot() == 48)) {
+                int currentPage = getCurrentPage(title);
                 int previousPage = Math.max(0, currentPage - 1);
-                new PlayerMenu(config).openPlayerMenu(player, previousPage, true);
-            } else if (displayName.contains("Página Siguiente")) {
-                int currentPage = getCurrentPage(player.getOpenInventory().getTitle());
+                new PlayerMenu(config).openPlayerMenu(player, previousPage, isAZ);
+            } 
+            // Botón de página siguiente
+            else if (displayName.contains("Página Siguiente") || 
+                    (clickedItem.getType() == Material.PLAYER_HEAD && event.getSlot() == 50)) {
+                int currentPage = getCurrentPage(title);
                 int nextPage = currentPage + 1;
-                new PlayerMenu(config).openPlayerMenu(player, nextPage, true);
-            } else if (clickedItem.getType() == Material.PLAYER_HEAD) {
-                player.sendMessage("§aSeleccionaste un jugador: " + displayName);
-            } else if (clickedItem.getType() == Material.CLOCK) {
-                player.sendMessage("§eRefrescando placeholders...");
-                Bukkit.getScheduler().runTaskLater(Bukkit.getPluginManager().getPlugin("MonoxiMenus"), () -> {
-                    new PlayerMenu(config).openPlayerMenu(player, getCurrentPage(player.getOpenInventory().getTitle()), true);
-                }, 20L); // 1 segundo de espera antes de refrescar
-            } else if (clickedItem.getType() == Material.BOOK) {
-                boolean currentFilter = player.getOpenInventory().getTitle().contains("A-Z");
-                new PlayerMenu(config).openPlayerMenu(player, 0, !currentFilter);
+                new PlayerMenu(config).openPlayerMenu(player, nextPage, isAZ);
+            } 
+            // Cabeza de jugador
+            else if (clickedItem.getType() == Material.PLAYER_HEAD && event.getSlot() < 45) {
+                String playerName = ChatColor.stripColor(displayName);
+                Player targetPlayer = Bukkit.getPlayerExact(playerName);
+
+                if (targetPlayer != null && targetPlayer.isOnline()) {
+                    // Abrir el menú de acciones para el jugador seleccionado
+                    new PlayerActionsMenu(config).openActionsMenu(player, targetPlayer);
+                } else {
+                    String message = config.getString("messages.player_offline", "§cEl jugador %player% no está en línea.")
+                            .replace("%player%", playerName);
+                    player.sendMessage(message);
+                }
+            }
+            // Botón de refrescar
+            else if (clickedItem.getType() == Material.CLOCK) {
+                String message = config.getString("messages.refreshing", "§eRefrescando el menú...");
+                player.sendMessage(message);
+                Bukkit.getScheduler().runTaskLater(
+                    Bukkit.getPluginManager().getPlugin("MonoxiMenus"), 
+                    () -> new PlayerMenu(config).openPlayerMenu(player, getCurrentPage(title), isAZ), 
+                    20L // 1 segundo de espera antes de refrescar
+                );
+            } 
+            // Botón de filtro
+            else if (clickedItem.getType() == Material.BOOK) {
+                new PlayerMenu(config).openPlayerMenu(player, 0, !isAZ);
+            }
+            // Botón de cerrar
+            else if (clickedItem.getType() == Material.BARRIER) {
+                player.closeInventory();
             }
         }
     }

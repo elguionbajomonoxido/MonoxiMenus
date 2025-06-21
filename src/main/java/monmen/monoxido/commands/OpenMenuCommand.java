@@ -13,16 +13,23 @@ public class OpenMenuCommand implements CommandExecutor {
 
     public OpenMenuCommand(MonoxiMenus plugin) {
         this.plugin = plugin;
-
     }
+
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (sender instanceof Player) {
-            new PlayerMenu(plugin.getConfig()).openPlayerMenu((Player) sender, 0, true);
+        if (!(sender instanceof Player)) {
+            sender.sendMessage("§cEste comando solo puede ser usado por jugadores.");
             return true;
         }
 
         Player player = (Player) sender;
+
+        // Verificar si el jugador tiene permiso para usar el comando
+        if (!player.hasPermission("monoximenus.use")) {
+            String message = plugin.getConfig().getString("messages.no_permission", "§cNo tienes permiso para usar este comando.");
+            player.sendMessage(message);
+            return true;
+        }
         boolean alphabeticalOrder = true;
         int page = 0;
 
@@ -38,7 +45,7 @@ public class OpenMenuCommand implements CommandExecutor {
             }
         }
 
-        new PlayerMenu(plugin.getConfig()).openPlayerMenu((Player) sender, 0, true);;
+        new PlayerMenu(plugin.getConfig()).openPlayerMenu(player, page, alphabeticalOrder);
         return true;
     }
 }

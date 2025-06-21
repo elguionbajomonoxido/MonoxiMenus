@@ -29,7 +29,7 @@ public class PlayerMenu {
                 .collect(Collectors.toList());
 
         if (onlinePlayers.isEmpty()) {
-            player.sendMessage(ChatColor.RED + "No hay jugadores disponibles.");
+            player.sendMessage(config.getString("messages.no_players", "§cNo hay jugadores disponibles."));
             return;
         }
 
@@ -45,8 +45,17 @@ public class PlayerMenu {
         // Luego ajustamos `page` y lo hacemos final
         final int fixedPage = Math.max(0, Math.min(page, totalPages - 1));
 
+        // Obtener el título del menú desde la configuración
+        String filterName = alphabeticalOrder ? 
+                config.getString("menu.filter_az", "A-Z") : 
+                config.getString("menu.filter_time", "Tiempo");
+
+        String menuTitle = config.getString("menu.title", "Jugadores - %filter% - Página %page%")
+                .replace("%filter%", filterName)
+                .replace("%page%", String.valueOf(fixedPage + 1));
+
         // Crear el inventario
-        Inventory menu = Bukkit.createInventory(player, MENU_SIZE, "Jugadores - " + (alphabeticalOrder ? "A-Z" : "Tiempo") + " - Página " + (fixedPage + 1));
+        Inventory menu = Bukkit.createInventory(player, MENU_SIZE, menuTitle);
 
         int startIndex = fixedPage * MAX_PLAYERS_PER_PAGE;
         int endIndex = Math.min(startIndex + MAX_PLAYERS_PER_PAGE, onlinePlayers.size());
@@ -85,15 +94,33 @@ public class PlayerMenu {
     }
 
     private void addMenuButtons(Inventory menu, int page, int totalPages, boolean alphabeticalOrder) {
-        menu.setItem(45, createMenuItem(Material.CLOCK, ChatColor.YELLOW + "Refrescar"));
+        // Botón de refrescar
+        String refreshText = config.getString("menu.buttons.refresh", "§eRefrescar");
+        menu.setItem(45, createMenuItem(Material.CLOCK, refreshText));
+
+        // Botón de página anterior
         if (page > 0) {
             menu.setItem(48, SkinCache.getCustomHead(false)); // Página Anterior
         }
-        menu.setItem(49, createMenuItem(Material.BARRIER, ChatColor.RED + "Cerrar"));
+
+        // Botón de cerrar
+        String closeText = config.getString("menu.buttons.close", "§cCerrar");
+        menu.setItem(49, createMenuItem(Material.BARRIER, closeText));
+
+        // Botón de página siguiente
         if (page < totalPages - 1) {
             menu.setItem(50, SkinCache.getCustomHead(true)); // Página Siguiente
         }
-        menu.setItem(53, createMenuItem(Material.BOOK, ChatColor.AQUA + "Filtros: " + (alphabeticalOrder ? "Tiempo" : "A-Z")));
+
+        // Botón de filtro
+        String nextFilter = alphabeticalOrder ? 
+                config.getString("menu.filter_time", "Tiempo") : 
+                config.getString("menu.filter_az", "A-Z");
+
+        String filterText = config.getString("menu.buttons.filter", "§aFiltros: %filter%")
+                .replace("%filter%", nextFilter);
+
+        menu.setItem(53, createMenuItem(Material.BOOK, filterText));
     }
 
     private ItemStack createMenuItem(Material material, String name) {

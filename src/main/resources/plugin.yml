@@ -1,12 +1,12 @@
 name: MonoxiMenus
-version: 0.1
+version: 0.4
 main: monmen.monoxido.MonoxiMenus
-api-version: 1.21
+api-version: 1.20
 depend: [PlaceholderAPI]
 author: MonoxiDev
 description: Plugin de menú de jugadores con skins en caché.
 commands:
-  playermenu:
+  pmenu:
     description: Abre el menú de jugadores.
     usage: /pmenu
     permission: monoximenus.use
@@ -14,10 +14,14 @@ commands:
     description: Borra la caché de skins.
     usage: /clearskincache
     permission: monoximenus.admin
+  pmenureload:
+    description: Recarga la configuración del plugin.
+    usage: /pmenureload
+    permission: monoximenus.admin
 permissions:
   monoximenus.use:
     description: Permite abrir el menú de jugadores.
-    default: true
+    default: op
   monoximenus.admin:
     description: Permite borrar la caché de skins.
     default: op
